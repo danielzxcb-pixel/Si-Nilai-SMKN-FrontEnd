@@ -1,0 +1,18 @@
+# Ignore sensitive files and environment configs
+.env
+.env.*
+!.env.example
+
+# Ignore dependency directories
+/vendor/
+/node_modules/
+
+# Ignore writable storage and runtime databases
+/writable/
+*.sqlite
+*.sqlite3
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db

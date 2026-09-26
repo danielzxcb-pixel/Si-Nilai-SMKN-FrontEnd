@@ -1,0 +1,14 @@
+{
+  "name": "sinilai/sinilai-backend",
+  "type": "project",
+  "description": "SiNilai SMK Backend REST API with CodeIgniter 4",
+  "require": {
+    "php": "^8.1",
+    "firebase/php-jwt": "^6.10"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  }
+}
