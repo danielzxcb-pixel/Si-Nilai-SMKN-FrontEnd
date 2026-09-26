@@ -11,42 +11,319 @@ class Database
 
     public static function connect(): PDO
     {
-        if (self::$instance === null) {
-            $writableDir = __DIR__ . '/../../writable';
-            if (!is_dir($writableDir)) {
-                mkdir($writableDir, 0755, true);
-            }
+        if (self::$instance !== null) {
+            return self::$instance;
+        }
 
-            $dbPath = $writableDir . '/database.sqlite';
-            $isNew = !file_exists($dbPath);
+        // ============================================================
+        // AUTO-DETECT: MySQL (Railway Production) vs SQLite (Local Dev)
+        // Railway sets MYSQL_HOST, MYSQL_URL, or MYSQLHOST automatically.
+        // If any of those exist, use MySQL. Otherwise fall back to SQLite.
+        // ============================================================
+        $mysqlHost = getenv('MYSQL_HOST') ?: getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: '';
+        $mysqlUrl  = getenv('MYSQL_URL') ?: getenv('MYSQL_PUBLIC_URL') ?: '';
 
-            try {
-                self::$instance = new PDO('sqlite:' . $dbPath);
-                self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                self::$instance->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-                // Enable foreign keys in SQLite
-                self::$instance->exec('PRAGMA foreign_keys = ON;');
-
-                if ($isNew) {
-                    self::initializeSchema(self::$instance);
-                    self::seedData(self::$instance);
-                }
-            } catch (PDOException $e) {
-                // In production, do not leak connection strings or stack traces
-                error_log('Database connection error: ' . $e->getMessage());
-                http_response_code(500);
-                header('Content-Type: application/json');
-                echo json_encode(['status' => 500, 'error' => 'Internal server error']);
-                exit;
-            }
+        if (!empty($mysqlHost) || !empty($mysqlUrl)) {
+            self::$instance = self::connectMySQL($mysqlHost, $mysqlUrl);
+        } else {
+            self::$instance = self::connectSQLite();
         }
 
         return self::$instance;
     }
 
+    // ── MySQL Connection (Railway Production) ─────────────────────────
+    private static function connectMySQL(string $host, string $url): PDO
+    {
+        try {
+            // Prefer individual env vars (internal private network = faster)
+            if (!empty($host)) {
+                $port   = (int)(getenv('MYSQL_PORT') ?: getenv('MYSQLPORT') ?: 3306);
+                $dbname = getenv('MYSQL_DATABASE') ?: getenv('MYSQLDATABASE') ?: 'railway';
+                $user   = getenv('MYSQL_USER') ?: getenv('MYSQLUSER') ?: 'root';
+                $pass   = getenv('MYSQL_PASSWORD') ?: getenv('MYSQLPASSWORD') ?: getenv('MYSQL_ROOT_PASSWORD') ?: '';
+                $dsn    = "mysql:host={$host};port={$port};dbname={$dbname};charset=utf8mb4";
+            } else {
+                // Parse from connection URL: mysql://user:pass@host:port/dbname
+                $parsed = parse_url($url);
+                $host   = $parsed['host'] ?? '127.0.0.1';
+                $port   = $parsed['port'] ?? 3306;
+                $dbname = ltrim($parsed['path'] ?? '/railway', '/');
+                $user   = urldecode($parsed['user'] ?? 'root');
+                $pass   = urldecode($parsed['pass'] ?? '');
+                $dsn    = "mysql:host={$host};port={$port};dbname={$dbname};charset=utf8mb4";
+            }
+
+            $options = [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_PERSISTENT         => false,
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
+                // Reconnect on timeout (important for Railway's idle connection drops)
+                PDO::ATTR_TIMEOUT            => 10,
+            ];
+
+            $pdo = new PDO($dsn, $user, $pass, $options);
+
+            // Check if DB is freshly empty → seed it
+            $tables = $pdo->query("SHOW TABLES LIKE 'users'")->fetchAll();
+            if (empty($tables)) {
+                error_log('[SiNilai] MySQL DB empty — initializing schema and seed data...');
+                self::initializeSchemaMySQL($pdo);
+                self::seedData($pdo);
+                error_log('[SiNilai] MySQL DB initialized successfully.');
+            }
+
+            return $pdo;
+
+        } catch (PDOException $e) {
+            error_log('[SiNilai] MySQL connection error: ' . $e->getMessage());
+            // Fallback to SQLite if MySQL is unreachable (development safety net)
+            error_log('[SiNilai] Falling back to SQLite...');
+            return self::connectSQLite();
+        }
+    }
+
+    // ── SQLite Connection (Local Development) ─────────────────────────
+    private static function connectSQLite(): PDO
+    {
+        $writableDir = __DIR__ . '/../../writable';
+        if (!is_dir($writableDir)) {
+            mkdir($writableDir, 0755, true);
+        }
+
+        $dbPath = $writableDir . '/database.sqlite';
+        $isNew  = !file_exists($dbPath);
+
+        try {
+            $pdo = new PDO('sqlite:' . $dbPath);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $pdo->exec('PRAGMA foreign_keys = ON;');
+            $pdo->exec('PRAGMA journal_mode = WAL;');
+
+            if ($isNew) {
+                self::initializeSchema($pdo);
+                self::seedData($pdo);
+            }
+
+            return $pdo;
+        } catch (PDOException $e) {
+            error_log('[SiNilai] SQLite connection error: ' . $e->getMessage());
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 500, 'error' => 'Internal server error']);
+            exit;
+        }
+    }
+
+
+
+    // ── MySQL Schema (Railway Production) ─────────────────────────────
+    private static function initializeSchemaMySQL(PDO $db): void
+    {
+        $statements = [
+            "CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(150) NOT NULL,
+                email VARCHAR(100) UNIQUE NOT NULL,
+                nip VARCHAR(50),
+                password_hash VARCHAR(255) NOT NULL,
+                role ENUM('admin','guru','waka','kepsek') NOT NULL DEFAULT 'guru',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS subjects (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                code VARCHAR(20) UNIQUE NOT NULL,
+                name VARCHAR(150) NOT NULL,
+                category ENUM('Kejuruan','Umum','Muatan Lokal') DEFAULT 'Umum',
+                kkm DECIMAL(5,2) DEFAULT 75.00
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS classes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(50) NOT NULL,
+                tingkat INT NOT NULL,
+                jurusan VARCHAR(50) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS teacher_assignments (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                teacher_id INT NOT NULL,
+                subject_id INT NOT NULL,
+                class_id INT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE KEY uq_assignment (teacher_id, subject_id, class_id),
+                FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
+                FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS students (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                full_name VARCHAR(150) NOT NULL,
+                nisn VARCHAR(20) UNIQUE NOT NULL,
+                nis VARCHAR(20) NOT NULL,
+                nik VARCHAR(20),
+                gender ENUM('L','P') DEFAULT 'L',
+                class_id INT NOT NULL,
+                absen_number INT DEFAULT 1,
+                FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS grades (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                student_id INT NOT NULL,
+                subject_id INT NOT NULL,
+                teacher_id INT NOT NULL,
+                class_id INT NOT NULL,
+                uh1 DECIMAL(5,2),
+                uh2 DECIMAL(5,2),
+                uh3 DECIMAL(5,2),
+                avg_uh DECIMAL(5,2),
+                uas_teori DECIMAL(5,2),
+                uas_praktik DECIMAL(5,2),
+                final_score DECIMAL(5,2),
+                status_kkm ENUM('Tuntas','Remedial','Belum Dinilai') DEFAULT 'Belum Dinilai',
+                competency_notes TEXT,
+                semester ENUM('ganjil','genap') DEFAULT 'genap',
+                academic_year VARCHAR(20) DEFAULT '2024/2025',
+                submitted TINYINT(1) DEFAULT 0,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY uq_grade (student_id, subject_id, semester, academic_year),
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+                FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
+                FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS grade_categories (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                subject_id INT NOT NULL,
+                class_id INT NOT NULL,
+                teacher_id INT NOT NULL,
+                category ENUM('ulangan_harian','tugas') NOT NULL,
+                label VARCHAR(50) NOT NULL,
+                sort_order INT NOT NULL DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
+                FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
+                FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS grade_entries (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                student_id INT NOT NULL,
+                grade_category_id INT NOT NULL,
+                score DECIMAL(5,2),
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY uq_entry (student_id, grade_category_id),
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+                FOREIGN KEY (grade_category_id) REFERENCES grade_categories(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS grade_formula_settings (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                subject_id INT NULL,
+                ulangan_harian_weight DECIMAL(5,2) NOT NULL DEFAULT 40.00,
+                tugas_weight DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+                uas_weight DECIMAL(5,2) NOT NULL DEFAULT 60.00,
+                updated_by INT NOT NULL,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
+                FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS site_content (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                content_key VARCHAR(150) UNIQUE NOT NULL,
+                page_group VARCHAR(50) NOT NULL,
+                content_value TEXT NOT NULL,
+                updated_by INT NOT NULL DEFAULT 1,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS grade_audit_logs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                grade_id INT,
+                changed_by VARCHAR(100) NOT NULL,
+                changed_by_role VARCHAR(20) NOT NULL,
+                student_name VARCHAR(150),
+                subject_name VARCHAR(150),
+                class_name VARCHAR(50),
+                old_score DECIMAL(5,2),
+                new_score DECIMAL(5,2),
+                field VARCHAR(100),
+                reason TEXT,
+                changed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS submission_deadlines (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                subject_id INT NOT NULL,
+                semester ENUM('ganjil','genap') DEFAULT 'genap',
+                academic_year VARCHAR(20) DEFAULT '2024/2025',
+                deadline DATE NOT NULL,
+                set_by VARCHAR(100) NOT NULL,
+                FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS submission_statuses (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                teacher_id INT NOT NULL,
+                subject_id INT NOT NULL,
+                class_id INT NOT NULL,
+                status ENUM('belum_mulai','sedang_diisi','terkirim') DEFAULT 'belum_mulai',
+                submitted_at DATETIME,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY uq_status (teacher_id, subject_id, class_id),
+                FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
+                FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS recap_windows (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                semester ENUM('ganjil','genap'),
+                academic_year VARCHAR(20),
+                opens_at DATETIME NOT NULL,
+                closes_at DATETIME NOT NULL,
+                set_by VARCHAR(100) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS graduated_archive (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                angkatan INT NOT NULL,
+                class_id INT NOT NULL,
+                student_id INT NOT NULL,
+                subject_id INT NOT NULL,
+                final_grades TEXT,
+                archived_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+
+            "CREATE TABLE IF NOT EXISTS login_attempts (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                ip_address VARCHAR(45) NOT NULL,
+                identifier VARCHAR(100) NOT NULL,
+                attempts INT DEFAULT 1,
+                locked_until DATETIME,
+                last_attempt_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE KEY uq_attempt (ip_address, identifier)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        ];
+
+        foreach ($statements as $sql) {
+            $db->exec($sql);
+        }
+    }
+
+    // ── SQLite Schema (Local Development) ─────────────────────────────
     private static function initializeSchema(PDO $db): void
     {
+
         $sql = "
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -245,10 +522,14 @@ class Database
 
     private static function seedData(PDO $db): void
     {
+        // Detect driver to use correct ignore syntax
+        $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME); // 'mysql' or 'sqlite'
+        $insertIgnore = ($driver === 'mysql') ? 'INSERT IGNORE' : 'INSERT OR IGNORE';
+
         // 1. Seed Users (7 seed accounts, hashed with bcrypt)
         $defaultPassword = password_hash('password123', PASSWORD_BCRYPT);
         $userStmt = $db->prepare("
-            INSERT INTO users (name, email, nip, password_hash, role)
+            {$insertIgnore} INTO users (name, email, nip, password_hash, role)
             VALUES (:name, :email, :nip, :password_hash, :role)
         ");
 
@@ -274,7 +555,7 @@ class Database
 
         // 2. Seed Subjects
         $subjStmt = $db->prepare("
-            INSERT INTO subjects (code, name, category, kkm)
+            {$insertIgnore} INTO subjects (code, name, category, kkm)
             VALUES (:code, :name, :category, :kkm)
         ");
 
@@ -300,7 +581,7 @@ class Database
 
         // 3. Seed Classes
         $classStmt = $db->prepare("
-            INSERT INTO classes (name, tingkat, jurusan)
+            {$insertIgnore} INTO classes (name, tingkat, jurusan)
             VALUES (:name, :tingkat, :jurusan)
         ");
 
@@ -323,7 +604,7 @@ class Database
 
         // 4. Seed Teacher Assignments (ID 2=Budi Santoso (RPL), ID 3=Siti (IPAS), ID 4=Ahmad (MTK))
         $assignStmt = $db->prepare("
-            INSERT INTO teacher_assignments (teacher_id, subject_id, class_id)
+            {$insertIgnore} INTO teacher_assignments (teacher_id, subject_id, class_id)
             VALUES (:teacher_id, :subject_id, :class_id)
         ");
 
@@ -348,7 +629,7 @@ class Database
 
         // 5. Seed Students
         $studentStmt = $db->prepare("
-            INSERT INTO students (full_name, nisn, nis, gender, class_id, absen_number)
+            {$insertIgnore} INTO students (full_name, nisn, nis, gender, class_id, absen_number)
             VALUES (:full_name, :nisn, :nis, :gender, :class_id, :absen_number)
         ");
 
@@ -418,7 +699,7 @@ class Database
 
         // 9. Seed Site Content defaults
         $contentStmt = $db->prepare("
-            INSERT OR IGNORE INTO site_content (content_key, page_group, content_value, updated_by)
+            {$insertIgnore} INTO site_content (content_key, page_group, content_value, updated_by)
             VALUES (:key, :group, :val, 1)
         ");
 

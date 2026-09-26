@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSchool } from '../../context/SchoolContext';
 import confetti from 'canvas-confetti';
+import { GradeNumberInput } from '../common/GradeNumberInput';
 
 export const GuruDashboard: React.FC = () => {
   const { currentUser } = useAuth();
@@ -181,7 +182,7 @@ export const GuruDashboard: React.FC = () => {
   // Handle Score Input Change
   const handleScoreChange = (
     studentId: string,
-    field: 'uh1' | 'uh2' | 'uh3' | 'uasTeori' | 'uasPraktik',
+    field: 'uh1' | 'uh2' | 'uh3' | 'uh4' | 'uasTeori' | 'uasPraktik',
     valStr: string
   ) => {
     if (isClassSubmitted || !currentUser) return;
@@ -799,15 +800,12 @@ export const GuruDashboard: React.FC = () => {
 
                       return (
                         <td key={cat.id} className="py-2 px-1 text-center bg-surface-container-low/50">
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
+                          <GradeNumberInput
+                            value={scoreVal}
                             disabled={isClassSubmitted}
-                            value={scoreVal !== null && scoreVal !== undefined ? scoreVal : ''}
-                            onChange={(e) => handleCategoryScoreChange(student.id, cat.id, e.target.value)}
-                            placeholder="—"
-                            className="w-14 text-center py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-semibold focus:outline-none focus:ring-2 focus:ring-primary shadow-xs border border-surface-container-high disabled:opacity-75 disabled:bg-surface-container"
+                            theme="primary"
+                            title={`Nilai ${cat.label} - ${student.fullName}`}
+                            onChange={(valStr) => handleCategoryScoreChange(student.id, cat.id, valStr)}
                           />
                         </td>
                       );
@@ -823,15 +821,12 @@ export const GuruDashboard: React.FC = () => {
                       const scoreVal = catScores[cat.id];
                       return (
                         <td key={cat.id} className="py-2 px-1 text-center bg-indigo-50/30 border-l border-indigo-100">
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
+                          <GradeNumberInput
+                            value={scoreVal}
                             disabled={isClassSubmitted}
-                            value={scoreVal !== null && scoreVal !== undefined ? scoreVal : ''}
-                            onChange={(e) => handleCategoryScoreChange(student.id, cat.id, e.target.value)}
-                            placeholder="—"
-                            className="w-14 text-center py-1.5 rounded-lg bg-surface-container-lowest text-indigo-950 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs border border-indigo-200 disabled:opacity-75 disabled:bg-surface-container"
+                            theme="indigo"
+                            title={`Nilai ${cat.label} - ${student.fullName}`}
+                            onChange={(valStr) => handleCategoryScoreChange(student.id, cat.id, valStr)}
                           />
                         </td>
                       );
@@ -845,15 +840,12 @@ export const GuruDashboard: React.FC = () => {
                     {/* UAS Teori */}
                     {showTeori && (
                       <td className="py-2 px-1 text-center border-l">
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
+                        <GradeNumberInput
+                          value={g?.uasTeori}
                           disabled={isClassSubmitted}
-                          value={g?.uasTeori !== null && g?.uasTeori !== undefined ? g.uasTeori : ''}
-                          onChange={(e) => handleScoreChange(student.id, 'uasTeori', e.target.value)}
-                          placeholder="—"
-                          className="w-14 text-center py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-semibold focus:outline-none focus:ring-2 focus:ring-secondary shadow-xs border border-surface-container-high disabled:opacity-75 disabled:bg-surface-container"
+                          theme="secondary"
+                          title={`Nilai UAS Teori - ${student.fullName}`}
+                          onChange={(valStr) => handleScoreChange(student.id, 'uasTeori', valStr)}
                         />
                       </td>
                     )}
@@ -861,15 +853,12 @@ export const GuruDashboard: React.FC = () => {
                     {/* UAS Praktik */}
                     {showPraktik && (
                       <td className="py-2 px-1 text-center border-l">
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
+                        <GradeNumberInput
+                          value={g?.uasPraktik}
                           disabled={isClassSubmitted}
-                          value={g?.uasPraktik !== null && g?.uasPraktik !== undefined ? g.uasPraktik : ''}
-                          onChange={(e) => handleScoreChange(student.id, 'uasPraktik', e.target.value)}
-                          placeholder="—"
-                          className="w-14 text-center py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-semibold focus:outline-none focus:ring-2 focus:ring-secondary shadow-xs border border-surface-container-high disabled:opacity-75 disabled:bg-surface-container"
+                          theme="secondary"
+                          title={`Nilai UAS Praktik - ${student.fullName}`}
+                          onChange={(valStr) => handleScoreChange(student.id, 'uasPraktik', valStr)}
                         />
                       </td>
                     )}

@@ -353,38 +353,126 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
   };
 
-  // Helper calculation for grade formula: (avg(UH) * 0.4) + (avg(UAS) * 0.6)
+  // Helper calculation for grade formula
   const calculateFinalGrade = (
     uh1: number | null,
     uh2: number | null,
     uh3: number | null,
-    uasTeori: number | null,
-    uasPraktik: number | null
+    uh4: number | null = null,
+    uasTeori: number | null = null,
+    uasPraktik: number | null = null,
+    categoryScores: Record<string, number | null> = {},
+    subjectId?: string
   ) => {
-    const uhs = [uh1, uh2, uh3].filter((v): v is number => v !== null && !isNaN(v));
-    const avgUh = uhs.length > 0 ? uhs.reduce((a, b) => a + b, 0) / uhs.length : null;
+    // 1. Collect all UH scores (from categoryScores or static uh1-uh4)
+    const uhScoreList: number[] = [];
+    const uhCatKeys = Object.keys(categoryScores).filter(
+      (k) => k.startsWith('cat-uh-') || k.includes('ulangan_harian')
+    );
 
-    const uas = [uasTeori, uasPraktik].filter((v): v is number => v !== null && !isNaN(v));
-    const avgUas = uas.length > 0 ? uas.reduce((a, b) => a + b, 0) / uas.length : null;
+    if (uhCatKeys.length > 0) {
+      uhCatKeys.forEach((k) => {
+        const v = categoryScores[k];
+        if (v !== null && v !== undefined && !isNaN(v)) {
+          uhScoreList.push(v);
+        }
+      });
+    } else {
+      [uh1, uh2, uh3, uh4].forEach((v) => {
+        if (v !== null && v !== undefined && !isNaN(v)) {
+          uhScoreList.push(v);
+        }
+      });
+    }
 
-    if (avgUh === null && avgUas === null) {
-      return { avgUh: null, finalScore: null, statusKkm: 'Belum Dinilai' as const };
+    const avgUh =
+      uhScoreList.length > 0
+        ? Number((uhScoreList.reduce((a, b) => a + b, 0) / uhScoreList.length).toFixed(1))
+        : null;
+
+    // 2. Collect all Tugas scores
+    const tgCatKeys = Object.keys(categoryScores).filter(
+      (k) => k.startsWith('cat-tg-') || k.includes('tugas')
+    );
+    const tgScoreList: number[] = [];
+    tgCatKeys.forEach((k) => {
+      const v = categoryScores[k];
+      if (v !== null && v !== undefined && !isNaN(v)) {
+        tgScoreList.push(v);
+      }
+    });
+
+    const avgTugas =
+      tgScoreList.length > 0
+        ? Number((tgScoreList.reduce((a, b) => a + b, 0) / tgScoreList.length).toFixed(1))
+        : null;
+
+    // 3. Collect UAS scores (Teori & Praktik)
+    const uas = [uasTeori, uasPraktik].filter(
+      (v): v is number => v !== null && v !== undefined && !isNaN(v)
+    );
+    const avgUas =
+      uas.length > 0 ? Number((uas.reduce((a, b) => a + b, 0) / uas.length).toFixed(1)) : null;
+
+    if (avgUh === null && avgTugas === null && avgUas === null) {
+      return { avgUh: null, avgTugas: null, finalScore: null, statusKkm: 'Belum Dinilai' as const };
+    }
+
+    // 4. Determine weights (check custom subject or global weights)
+    let wUh = 40;
+    let wTugas = 0;
+    let wUas = 60;
+
+    try {
+      const key = subjectId ? `sinilai_weights_${subjectId}` : 'sinilai_weights_global';
+      const savedWeights = localStorage.getItem(key) || localStorage.getItem('sinilai_weights_global');
+      if (savedWeights) {
+        const parsed = JSON.parse(savedWeights);
+        if (parsed.ulangan_harian_weight !== undefined) wUh = parsed.ulangan_harian_weight;
+        if (parsed.tugas_weight !== undefined) wTugas = parsed.tugas_weight;
+        if (parsed.uas_weight !== undefined) wUas = parsed.uas_weight;
+      } else if (avgTugas !== null) {
+        wUh = 30;
+        wTugas = 20;
+        wUas = 50;
+      }
+    } catch {
+      // fallback to defaults
+    }
+
+    let totalWeight = 0;
+    let weightedSum = 0;
+
+    if (avgUh !== null && wUh > 0) {
+      weightedSum += avgUh * wUh;
+      totalWeight += wUh;
+    }
+    if (avgTugas !== null && wTugas > 0) {
+      weightedSum += avgTugas * wTugas;
+      totalWeight += wTugas;
+    }
+    if (avgUas !== null && wUas > 0) {
+      weightedSum += avgUas * wUas;
+      totalWeight += wUas;
     }
 
     let finalScore: number | null = null;
-    if (avgUh !== null && avgUas !== null) {
-      finalScore = Number(((avgUh * 0.4) + (avgUas * 0.6)).toFixed(1));
+    if (totalWeight > 0) {
+      finalScore = Number((weightedSum / totalWeight).toFixed(1));
     } else if (avgUh !== null) {
-      finalScore = Number(avgUh.toFixed(1));
-    } else if (avgUas !== null) {
-      finalScore = Number(avgUas.toFixed(1));
+      finalScore = avgUh;
     }
 
+    // 5. Subject KKM threshold (default 75.0)
+    const targetSubject = subjects.find((s) => s.id === subjectId);
+    const kkmThreshold = targetSubject?.kkm || 75.0;
+
     const statusKkm: 'Tuntas' | 'Remedial' | 'Belum Dinilai' =
-      finalScore === null ? 'Belum Dinilai' : finalScore >= 75.0 ? 'Tuntas' : 'Remedial';
+      finalScore === null ? 'Belum Dinilai' : finalScore >= kkmThreshold ? 'Tuntas' : 'Remedial';
 
     return {
-      avgUh: avgUh ? Number(avgUh.toFixed(1)) : null,
+      avgUh,
+      avgTugas,
       finalScore,
       statusKkm,
     };
@@ -400,6 +488,8 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       uh1?: number | null;
       uh2?: number | null;
       uh3?: number | null;
+      uh4?: number | null;
+      categoryScores?: Record<string, number | null>;
       uasTeori?: number | null;
       uasPraktik?: number | null;
       competencyNotes?: string;
@@ -417,9 +507,43 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const prevGrade = existingIndex >= 0 ? grades[existingIndex] : null;
 
-    const uh1 = gradeData.uh1 !== undefined ? gradeData.uh1 : (prevGrade?.uh1 ?? null);
-    const uh2 = gradeData.uh2 !== undefined ? gradeData.uh2 : (prevGrade?.uh2 ?? null);
-    const uh3 = gradeData.uh3 !== undefined ? gradeData.uh3 : (prevGrade?.uh3 ?? null);
+    // Merge existing categoryScores with newly provided ones
+    const categoryScores: Record<string, number | null> = {
+      ...(prevGrade?.categoryScores || {}),
+      ...(gradeData.categoryScores || {}),
+    };
+
+    // Keep static uh1-uh4 synced with categoryScores
+    if (gradeData.uh1 !== undefined) categoryScores['cat-uh-1'] = gradeData.uh1;
+    if (gradeData.uh2 !== undefined) categoryScores['cat-uh-2'] = gradeData.uh2;
+    if (gradeData.uh3 !== undefined) categoryScores['cat-uh-3'] = gradeData.uh3;
+    if (gradeData.uh4 !== undefined) categoryScores['cat-uh-4'] = gradeData.uh4;
+
+    const uh1 =
+      categoryScores['cat-uh-1'] !== undefined
+        ? categoryScores['cat-uh-1']
+        : gradeData.uh1 !== undefined
+        ? gradeData.uh1
+        : (prevGrade?.uh1 ?? null);
+    const uh2 =
+      categoryScores['cat-uh-2'] !== undefined
+        ? categoryScores['cat-uh-2']
+        : gradeData.uh2 !== undefined
+        ? gradeData.uh2
+        : (prevGrade?.uh2 ?? null);
+    const uh3 =
+      categoryScores['cat-uh-3'] !== undefined
+        ? categoryScores['cat-uh-3']
+        : gradeData.uh3 !== undefined
+        ? gradeData.uh3
+        : (prevGrade?.uh3 ?? null);
+    const uh4 =
+      categoryScores['cat-uh-4'] !== undefined
+        ? categoryScores['cat-uh-4']
+        : gradeData.uh4 !== undefined
+        ? gradeData.uh4
+        : (prevGrade?.uh4 ?? null);
+
     const uasTeori =
       gradeData.uasTeori !== undefined ? gradeData.uasTeori : (prevGrade?.uasTeori ?? null);
     const uasPraktik =
@@ -427,12 +551,15 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         ? gradeData.uasPraktik
         : (prevGrade?.uasPraktik ?? null);
 
-    const { avgUh, finalScore, statusKkm } = calculateFinalGrade(
+    const { avgUh, avgTugas, finalScore, statusKkm } = calculateFinalGrade(
       uh1,
       uh2,
       uh3,
+      uh4,
       uasTeori,
-      uasPraktik
+      uasPraktik,
+      categoryScores,
+      gradeData.subjectId
     );
 
     const updatedGrade: Grade = {
@@ -443,10 +570,13 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       classId: gradeData.classId,
       semester,
       academicYear,
+      categoryScores,
       uh1,
       uh2,
       uh3,
+      uh4,
       avgUh,
+      avgTugas,
       uasTeori,
       uasPraktik,
       finalScore,

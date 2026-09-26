@@ -1,0 +1,14 @@
+# SiNilai SMK Backend — Railway Deployment Configuration
+# =========================================================
+# File ini memberitahu Railway cara menjalankan backend PHP.
+# Railway akan otomatis detect PHP dan menjalankan web server.
+
+[build]
+# Railway auto-detects PHP via composer.json
+# Nixpacks akan install PHP 8.2 + extensions otomatis
+
+[deploy]
+# Start command: serve public/ folder via PHP built-in server
+startCommand = "php -S 0.0.0.0:$PORT -t public public/index.php"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

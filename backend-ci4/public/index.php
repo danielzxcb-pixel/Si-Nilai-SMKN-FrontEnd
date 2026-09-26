@@ -47,17 +47,16 @@ $allowedOrigins = [
     'http://127.0.0.1:5173',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    // === PRODUCTION VERCEL (ganti dengan domain Anda) ===
-    // Contoh: 'https://sinilai-smkn1.vercel.app',
-    //         'https://sinilai.smkn1tanjungpandan.sch.id',
+    // === PRODUCTION VERCEL ===
+    'https://sinilaifrontend.vercel.app',
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
 // Izinkan juga semua preview deployment Vercel (*.vercel.app)
 // dan network LAN lokal untuk testing di sekolah
-$isVercelPreview = preg_match('#^https://[a-z0-9-]+-[a-z0-9-]+\.vercel\.app$#', $origin);
-$isLocalNetwork  = preg_match('#^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$#', $origin);
+$isVercelPreview = (bool)preg_match('#^https://[a-z0-9-]+-[a-z0-9]+-[a-z0-9]+\.vercel\.app$#', $origin);
+$isLocalNetwork  = (bool)preg_match('#^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$#', $origin);
 
 if (in_array($origin, $allowedOrigins, true) || $isVercelPreview || $isLocalNetwork) {
     header("Access-Control-Allow-Origin: {$origin}");
@@ -66,6 +65,7 @@ if (in_array($origin, $allowedOrigins, true) || $isVercelPreview || $isLocalNetw
     header('Access-Control-Allow-Headers: Authorization, Content-Type, Accept, X-Requested-With');
     header('Vary: Origin');
 }
+
 
 // Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

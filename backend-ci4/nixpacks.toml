@@ -1,0 +1,24 @@
+# nixpacks.toml — Railway PHP Build Configuration for SiNilai SMK
+# ================================================================
+# Railway menggunakan Nixpacks untuk auto-build aplikasi PHP.
+# File ini memastikan PHP extensions yang dibutuhkan ter-install.
+
+[phases.setup]
+nixPkgs = [
+    "php82",
+    "php82Extensions.pdo",
+    "php82Extensions.pdo_mysql",
+    "php82Extensions.pdo_sqlite",
+    "php82Extensions.mbstring",
+    "php82Extensions.openssl",
+    "php82Extensions.json",
+    "php82Extensions.curl",
+    "php82Packages.composer",
+    "sqlite",
+]
+
+[phases.install]
+cmds = ["composer install --no-dev --optimize-autoloader"]
+
+[start]
+cmd = "php -S 0.0.0.0:$PORT -t public public/index.php"
