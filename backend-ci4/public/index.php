@@ -3,6 +3,25 @@
 // Front Controller & Security Hardening Router for SiNilai SMK
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// =====================================================================
+// Load Environment Variables from .env file (Railway/local backend)
+// The .env file MUST be placed OUTSIDE the public/ directory.
+// On Railway: credentials are injected automatically as env vars.
+// =====================================================================
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        if (strpos(trim($line), '#') === 0) continue;
+        if (strpos($line, '=') !== false) {
+            [$key, $val] = array_map('trim', explode('=', $line, 2));
+            if (!empty($key) && !isset($_ENV[$key])) {
+                $_ENV[$key] = $val;
+                putenv("{$key}={$val}");
+            }
+        }
+    }
+}
+
 // Disable error display in production to prevent leaking sensitive system paths
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
@@ -13,17 +32,39 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
 header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Strict-Transport-Security: max-age=63072000; includeSubDomains; preload');
+header('Content-Security-Policy: default-src \'none\'; frame-ancestors \'none\'');
 header('Content-Type: application/json; charset=UTF-8');
 
-// 2. Strict CORS Configuration (Only allow trusted frontend origin, never wildcard '*')
-$allowedOrigin = 'http://localhost:5173';
+// 2. Strict CORS Configuration
+// ─────────────────────────────────────────────────────────────────────
+// PRODUCTION: Tambahkan domain Vercel Anda di sini (ganti placeholder).
+// Jangan gunakan wildcard (*) — itu membuka celah CSRF.
+// ─────────────────────────────────────────────────────────────────────
+$allowedOrigins = [
+    // === LOKAL DEV ===
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    // === PRODUCTION VERCEL (ganti dengan domain Anda) ===
+    // Contoh: 'https://sinilai-smkn1.vercel.app',
+    //         'https://sinilai.smkn1tanjungpandan.sch.id',
+];
+
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
-if ($origin === $allowedOrigin) {
-    header("Access-Control-Allow-Origin: {$allowedOrigin}");
+// Izinkan juga semua preview deployment Vercel (*.vercel.app)
+// dan network LAN lokal untuk testing di sekolah
+$isVercelPreview = preg_match('#^https://[a-z0-9-]+-[a-z0-9-]+\.vercel\.app$#', $origin);
+$isLocalNetwork  = preg_match('#^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$#', $origin);
+
+if (in_array($origin, $allowedOrigins, true) || $isVercelPreview || $isLocalNetwork) {
+    header("Access-Control-Allow-Origin: {$origin}");
     header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Authorization, Content-Type, Accept, X-Requested-With');
+    header('Vary: Origin');
 }
 
 // Handle preflight OPTIONS request

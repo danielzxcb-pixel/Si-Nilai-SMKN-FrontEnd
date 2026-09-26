@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Panduan Menjalankan Server SiNilai SMK - SMKN 1 Tanjungpandan</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+    
+    @page {
+      size: A4 portrait;
+      margin: 14mm 15mm 15mm 15mm;
+      @bottom-right {
+        content: "Halaman " counter(page);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 8pt;
+        color: #64748b;
+      }
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      font-size: 9.5pt;
+      line-height: 1.55;
+    }
+
+    .page {
+      page-break-after: always;
+      position: relative;
+    }
+
+    .page:last-child {
+      page-break-after: avoid;
+    }
+
+    .doc-header {
+      border-bottom: 3px double #0f172a;
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .doc-header img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+
+    .doc-header-text h1 {
+      font-size: 15pt;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+    }
+
+    .doc-header-text h2 {
+      font-size: 10pt;
+      font-weight: 700;
+      color: #2563eb;
+    }
+
+    .doc-header-text p {
+      font-size: 8pt;
+      color: #64748b;
+    }
+
+    .section-title {
+      font-size: 12pt;
+      font-weight: 800;
+      color: #0f172a;
+      border-left: 4px solid #2563eb;
+      padding-left: 10px;
+      margin-top: 20px;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      page-break-inside: avoid;
+    }
+
+    .card h3 {
+      font-size: 10pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    pre, code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 8.5pt;
+      overflow-x: auto;
+      margin: 8px 0;
+      line-height: 1.4;
+    }
+
+    code {
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 8.5pt;
+      font-weight: 600;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .table-spec {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.5pt;
+      margin: 10px 0;
+    }
+
+    .table-spec th, .table-spec td {
+      border: 1px solid #e2e8f0;
+      padding: 7px 10px;
+      text-align: left;
+    }
+
+    .table-spec th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 7.5pt;
+      font-weight: 700;
+    }
+
+    .badge-blue { background: #eff6ff; color: #1d4ed8; }
+    .badge-green { background: #f0fdf4; color: #15803d; }
+    .badge-amber { background: #fefce8; color: #b45309; }
+
+    .note-box {
+      background: #eff6ff;
+      border-left: 3.5px solid #3b82f6;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 8.5pt;
+      color: #1e40af;
+      margin: 10px 0;
+    }
+
+    .success-box {
+      background: #f0fdf4;
+      border-left: 3.5px solid #22c55e;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 8.5pt;
+      color: #166534;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== HALAMAN 1 ==================== -->
+  <div class="page">
+    <div class="doc-header">
+      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpZ6o2KrkbKXybZ8cIkhA02LSpGOzSFlKIw3CipEuDrqObqM96n2s41f6-eE5v8RSsP5b719kbLOB-6T04n5thTef-An5Mz-25dpf7XHsBVqUZvd5Zi_wm4Ay4yLSCy3fV2_97BphWxxWq5S3u-rCp2FJXecQ8gnagFS_JkvyFeCnR5kFXegfvRQLchiwk3jcYLHnZG4ga-y-l3LyWeCKGSYLOYHRWUBr_kk93hCqrucT-lOVsQ3Z20g" alt="Logo SMKN 1" />
+      <div class="doc-header-text">
+        <h1>Panduan Menjalankan & Mengelola Server</h1>
+        <h2>Aplikasi SiNilai SMK — SMKN 1 Tanjungpandan</h2>
+        <p>Petunjuk Teknis Deployment, Menjalankan Backend PHP CodeIgniter 4, Frontend Vite, dan Database</p>
+      </div>
+    </div>
+
+    <div class="section-title">1. Arsitektur & Spesifikasi Sistem</div>
+    <div class="card">
+      <p>Aplikasi <strong>SiNilai SMKN 1 Tanjungpandan</strong> dibangun menggunakan arsitektur modern terpisah (Decoupled Single Page Application):</p>
+      <table class="table-spec">
+        <tr>
+          <th>Komponen</th>
+          <th>Teknologi / Framework</th>
+          <th>Port Default</th>
+          <th>Keterangan</th>
+        </tr>
+        <tr>
+          <td><strong>Frontend Client</strong></td>
+          <td>React 18 + Vite + TypeScript + Tailwind CSS</td>
+          <td><code>5173</code></td>
+          <td>Antarmuka pengguna interaktif (SPA)</td>
+        </tr>
+        <tr>
+          <td><strong>Backend API</strong></td>
+          <td>CodeIgniter 4 (PHP 8.x) + RESTful Controller</td>
+          <td><code>8000</code></td>
+          <td>Otentikasi JWT, filter keamanan, API kalkulasi</td>
+        </tr>
+        <tr>
+          <td><strong>Database</strong></td>
+          <td>SQLite 3 / MySQL (Kompatibel)</td>
+          <td>Internal</td>
+          <td>Penyimpanan terenkripsi & riwayat audit</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">2. Prasyarat Perangkat Lunak (System Requirements)</div>
+    <div class="card">
+      <p>Sebelum menjalankan server di komputer lokal atau laptop server sekolah, pastikan perangkat lunak berikut telah terpasang:</p>
+      <ul style="margin-left: 20px; font-size: 8.5pt; margin-top: 6px;">
+        <li><strong>Node.js:</strong> Versi 18.x atau lebih baru (Disarankan versi LTS, cek dengan <code>node -v</code>).</li>
+        <li><strong>PHP:</strong> Versi 8.1 atau 8.2+ (Cek dengan <code>php -v</code>).</li>
+        <li><strong>Ekstensi PHP Wajib:</strong> <code>php_pdo_sqlite</code>, <code>php_sqlite3</code>, <code>php_intl</code>, <code>php_mbstring</code>, <code>php_fileinfo</code>.</li>
+        <li><strong>Web Browser:</strong> Google Chrome atau Microsoft Edge versi terbaru.</li>
+      </ul>
+    </div>
+
+    <div class="section-title">3. Langkah Menjalankan Server Backend (CodeIgniter 4)</div>
+    <div class="card">
+      <h3>Langkah 3.1: Buka Terminal pada Folder Backend</h3>
+      <p>Buka terminal PowerShell atau Command Prompt pada direktori backend:</p>
+      <pre><code>cd "c:Website coba2SekolahAplikasi Management Nilaiackend-ci4"</code></pre>
+
+      <h3>Langkah 3.2: Jalankan PHP Built-in Server</h3>
+      <p>Jalankan server PHP yang mengarah ke direktori <code>public</code>:</p>
+      <pre><code>php -S 127.0.0.1:8000 -t public</code></pre>
+
+      <div class="success-box">
+        <strong>Backend Berjalan!</strong> Terminal akan menampilkan pesan: <code>[Date] Development Server (http://127.0.0.1:8000) started</code>. Jangan tutup jendela terminal ini selama aplikasi digunakan.
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HALAMAN 2 ==================== -->
+  <div class="page">
+    <div class="section-title">4. Langkah Menjalankan Server Frontend (React + Vite)</div>
+    <div class="card">
+      <h3>Langkah 4.1: Buka Terminal Baru untuk Frontend</h3>
+      <p>Buka jendela terminal kedua (jangan gunakan terminal backend yang sedang berjalan), lalu arahkan ke folder utama aplikasi:</p>
+      <pre><code>cd "c:Website coba2SekolahAplikasi Management Nilai"</code></pre>
+
+      <h3>Langkah 4.2: Instalasi Ketergantungan (Jika baru pertama kali)</h3>
+      <pre><code>npm install</code></pre>
+
+      <h3>Langkah 4.3: Jalankan Server Development Vite</h3>
+      <pre><code>npm run dev</code></pre>
+
+      <div class="success-box">
+        <strong>Frontend Berjalan!</strong> Terminal akan menampilkan:
+        <pre style="margin-top: 4px;"><code>  VITE v8.3.1  ready in 450 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://192.168.1.100:5173/ (Dapat diakses oleh laptop guru lain)</code></pre>
+      </div>
+    </div>
+
+    <div class="section-title">5. Mengakses Aplikasi SiNilai pada Browser</div>
+    <div class="card">
+      <p>Buka peramban Google Chrome atau Microsoft Edge, kemudian ketikkan alamat:</p>
+      <pre><code>http://localhost:5173</code></pre>
+      <p style="margin-top: 8px;">Gunakan salah satu dari 4 akun resmi berikut untuk masuk ke sistem:</p>
+
+      <table class="table-spec">
+        <tr>
+          <th>Role / Jabatan</th>
+          <th>Email / Akun Login</th>
+          <th>Kata Sandi</th>
+          <th>Halaman Awal Default</th>
+        </tr>
+        <tr>
+          <td><span class="badge-pill badge-blue">Admin</span></td>
+          <td><code>admin@sinilai.sch.id</code></td>
+          <td><code>password123</code></td>
+          <td>Tugas Mengajar Guru & Ringkasan Sekolah</td>
+        </tr>
+        <tr>
+          <td><span class="badge-pill badge-green">Guru</span></td>
+          <td><code>guru.rpl@sinilai.sch.id</code></td>
+          <td><code>password123</code></td>
+          <td>Input Nilai Siswa (Tabel Penilaian)</td>
+        </tr>
+        <tr>
+          <td><span class="badge-pill badge-amber">Waka</span></td>
+          <td><code>wakes@sinilai.sch.id</code></td>
+          <td><code>password123</code></td>
+          <td>Rekapitulasi & Pemantauan Nilai Rapor</td>
+        </tr>
+        <tr>
+          <td><span class="badge-pill badge-blue">Kepsek</span></td>
+          <td><code>kepsek@sinilai.sch.id</code></td>
+          <td><code>password123</code></td>
+          <td>Cetak Rapor Siswa & Riwayat Nilai</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section-title">6. Panduan Menghubungkan Laptop Guru via WiFi Sekolah (LAN)</div>
+    <div class="card">
+      <p>Agar Bapak/Ibu Guru dapat membuka aplikasi dari laptop masing-masing tanpa menyalakan server di tiap laptop:</p>
+      <ol style="margin-left: 20px; font-size: 8.5pt; margin-top: 6px;">
+        <li>Pastikan laptop server dan laptop guru terhubung pada jaringan WiFi yang sama di SMKN 1 Tanjungpandan.</li>
+        <li>Cek IP Address laptop server melalui terminal: <code>ipconfig</code> (misal didapat: <code>192.168.1.50</code>).</li>
+        <li>Jalankan frontend dengan opsi host: <code>npm run dev -- --host</code></li>
+        <li>Jalankan backend dengan binding 0.0.0.0: <code>php -S 0.0.0.0:8000 -t public</code></li>
+        <li>Bapak/Ibu Guru cukup membuka alamat: <code>http://192.168.1.50:5173</code> pada browser masing-masing.</li>
+      </ol>
+    </div>
+
+    <div class="section-title">7. Solusi Kendala Teknis Umum (Troubleshooting)</div>
+    <div class="card">
+      <table class="table-spec">
+        <tr>
+          <th>Gejala Kendala</th>
+          <th>Penyebab Kemungkinan</th>
+          <th>Langkah Solusi</th>
+        </tr>
+        <tr>
+          <td><strong>Port 8000 already in use</strong></td>
+          <td>Ada proses PHP atau aplikasi lain yang memakai port 8000.</td>
+          <td>Gunakan perintah <code>taskkill /F /IM php.exe</code> pada CMD, atau ganti port: <code>php -S 127.0.0.1:8001 -t public</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Driver SQLite not found</strong></td>
+          <td>Ekstensi pdo_sqlite di <code>php.ini</code> belum dibuka centangnya.</td>
+          <td>Buka file <code>php.ini</code>, hapus tanda titik koma (<code>;</code>) di depan baris <code>extension=pdo_sqlite</code> dan <code>extension=sqlite3</code>, lalu simpan.</td>
+        </tr>
+        <tr>
+          <td><strong>CORS Error saat Login</strong></td>
+          <td>Server backend belum dinyalakan atau port salah.</td>
+          <td>Pastikan terminal backend sudah menampilkan status server <code>127.0.0.1:8000 started</code> sebelum menekan tombol login.</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>

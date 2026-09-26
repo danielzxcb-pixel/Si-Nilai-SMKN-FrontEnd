@@ -51,15 +51,15 @@ export const RealtimeTrackerView: React.FC = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex flex-col">
           <div className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-wider mb-1">
-            <span>Pemantauan Rapor Terpadu</span>
+            <span>SMKN 1 Tanjungpandan</span>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span className="text-primary font-bold">WIB (Waktu Indonesia Barat)</span>
+            <span className="text-primary font-bold">Pantau Keterisian Rapor</span>
           </div>
           <h1 className="text-2xl font-extrabold text-on-surface tracking-tight">
-            Real-Time Submission Tracker
+            Progres Pengisian & Penyerahan Nilai Guru
           </h1>
           <p className="text-xs text-on-surface-variant mt-0.5">
-            Pembaruan status penyerahan nilai seluruh pengajar secara langsung via WebSocket Broadcaster tanpa polling.
+            Pantau status guru yang sedang mengisi atau sudah menyerahkan nilai rapor kelas secara langsung dan otomatis.
           </p>
         </div>
 
@@ -67,10 +67,10 @@ export const RealtimeTrackerView: React.FC = () => {
           <button
             onClick={handleSimulateLiveSubmission}
             className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-primary-container text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:opacity-95 active:scale-95 transition-all"
-            title="Simulasikan broadcast penyerahan nilai real-time"
+            title="Uji coba pembaruan status nilai langsung"
           >
-            <span className="material-symbols-outlined text-[18px]">satellite_alt</span>
-            <span>Simulasi Live WebSocket Event</span>
+            <span className="material-symbols-outlined text-[18px]">autorenew</span>
+            <span>Uji Simulasi Nilai Masuk</span>
           </button>
         </div>
       </div>

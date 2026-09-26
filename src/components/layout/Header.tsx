@@ -37,29 +37,29 @@ export const Header: React.FC<HeaderProps> = ({ currentTab }) => {
   const getTabLabel = (tab: string) => {
     switch (tab) {
       case 'admin-dashboard':
-        return 'Dashboard Admin';
+        return 'Ringkasan Sekolah';
       case 'guru-management':
-        return 'Manajemen Guru & Mapel';
+        return 'Tugas Mengajar Guru';
       case 'kelola-kelas-mapel':
-        return 'Kelola Kelas & Mapel';
+        return 'Data Kelas & Mapel';
       case 'monitoring-rekap':
-        return 'Monitoring & Rekap Nilai';
+        return 'Rekap & Pantau Nilai';
       case 'input-nilai':
-        return 'Input Nilai Kelas';
+        return 'Input Nilai Siswa';
       case 'realtime-tracker':
-        return 'Realtime Tracker';
+        return 'Progres Pengisian Nilai';
       case 'pkl-assessment':
-        return 'Penilaian PKL';
+        return 'Nilai PKL / Magang';
       case 'cetak-rapor':
-        return 'Cetak Rapor & QR Hash';
+        return 'Cetak Rapor & Verifikasi';
       case 'audit-log':
-        return 'Audit Log Perubahan';
+        return 'Riwayat Perubahan Nilai';
       case 'import-data':
-        return 'Import Excel / Dapodik';
+        return 'Impor Data Dapodik/Excel';
       case 'formula-settings':
-        return 'Pengaturan Bobot NA';
+        return 'Pengaturan Bobot Rapor';
       case 'site-content':
-        return 'Kelola Teks Website';
+        return 'Pesan & Teks Sekolah';
       default:
         return tab.replace(/-/g, ' ');
     }

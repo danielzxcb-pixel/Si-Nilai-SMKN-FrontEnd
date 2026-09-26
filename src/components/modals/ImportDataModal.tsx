@@ -101,15 +101,15 @@ export const ImportDataModal: React.FC = () => {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-wider mb-1">
-          <span>Sinkronisasi Data Massal</span>
+          <span>SMKN 1 Tanjungpandan</span>
           <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-          <span className="text-primary font-bold">Admin Portal</span>
+          <span className="text-primary font-bold">Data Peserta Didik</span>
         </div>
         <h1 className="text-2xl font-extrabold text-on-surface tracking-tight">
-          Import Data Peserta Didik & Integrasi Dapodik
+          Impor Data Siswa dari Dapodik / File Excel
         </h1>
         <p className="text-xs text-on-surface-variant mt-0.5">
-          Unggah berkas Excel/CSV siswa dengan preview komparasi diff sebelum commit data.
+          Unggah file Excel/CSV siswa untuk memasukkan atau memperbarui data rombel kelas secara otomatis tanpa ketik manual.
         </p>
       </div>
 

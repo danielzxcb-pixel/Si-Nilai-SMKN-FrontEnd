@@ -134,22 +134,22 @@ export const ClassSubjectManagementView: React.FC = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex flex-col">
           <div className="flex items-center gap-1.5 text-on-surface-variant text-xs font-semibold uppercase tracking-wider mb-1">
-            <span>Master Data Sekolah</span>
+            <span>SMKN 1 Tanjungpandan</span>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span className="text-primary font-bold">Rombel & Kurikulum Mapel</span>
+            <span className="text-primary font-bold">Rombel & Mata Pelajaran</span>
           </div>
           <h1 className="text-2xl font-extrabold text-on-surface tracking-tight">
-            Kelola Master Data Kelas & Mata Pelajaran
+            Data Rombongan Belajar (Kelas) & Mata Pelajaran
           </h1>
           <p className="text-xs text-on-surface-variant mt-0.5">
-            Tambah, perbarui, dan sesuaikan data rombel kelas serta mata pelajaran kurikulum merdeka sekolah dengan database realtime.
+            Daftar rombongan belajar (kelas) dan mata pelajaran resmi SMKN 1 Tanjungpandan untuk semester aktif.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <div className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-xl border border-emerald-300">
             <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-            Master Sync Aktif
+            Data Terhubung & Siap
           </div>
         </div>
       </div>

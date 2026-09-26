@@ -53,15 +53,15 @@ export const PklModuleModal: React.FC = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-wider mb-1">
-            <span>Pendidikan Vokasi & Link-and-Match Industri</span>
+            <span>SMKN 1 Tanjungpandan</span>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span className="text-primary font-bold">SMKN 1 Tanjungpandan</span>
+            <span className="text-primary font-bold">Praktik Kerja Lapangan (PKL)</span>
           </div>
           <h1 className="text-2xl font-extrabold text-on-surface tracking-tight">
-            Penilaian Praktik Kerja Lapangan (PKL) / Industri
+            Penilaian Praktik Kerja Lapangan (PKL) / Magang Siswa
           </h1>
           <p className="text-xs text-on-surface-variant mt-0.5">
-            Komponen penilaian terstandar industri (Disiplin 25%, Hard Skill 35%, Kerjasama 20%, Portofolio 20%).
+            Evaluasi capaian magang siswa sesuai pedoman SMKN 1 Tanjungpandan (Disiplin 25%, Keahlian 35%, Kerjasama 20%, Portofolio 20%).
           </p>
         </div>
 

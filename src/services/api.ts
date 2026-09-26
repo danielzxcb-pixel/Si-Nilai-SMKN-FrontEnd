@@ -1,9 +1,17 @@
 /**
  * SiNilai SMK — Secure API Client
- * Automatically attaches Bearer JWT token to authorized requests
+ * Automatically attaches Bearer JWT token to authorized requests.
+ *
+ * URL backend dibaca dari environment variable VITE_API_URL:
+ *   - Development: set di .env.local (tidak di-commit ke Git)
+ *   - Production : set di Vercel Dashboard > Settings > Environment Variables
+ *
+ * JANGAN hardcode URL atau credential di sini.
  */
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// Baca dari env Vite (hanya variabel VITE_* yang aman diekspos ke browser)
+const API_BASE_URL: string =
+  (import.meta.env.VITE_API_URL as string) || 'http://127.0.0.1:8000/api';
 
 export const apiClient = {
   getToken(): string | null {
@@ -49,9 +57,15 @@ export const apiClient = {
   },
 
   async login(identifier: string, password: string) {
+    const cleanId = (identifier || '').trim();
     return this.request('/login', {
       method: 'POST',
-      body: JSON.stringify({ identifier, password }),
+      body: JSON.stringify({
+        identifier: cleanId,
+        email: cleanId,
+        nip: cleanId,
+        password,
+      }),
     });
   },
 

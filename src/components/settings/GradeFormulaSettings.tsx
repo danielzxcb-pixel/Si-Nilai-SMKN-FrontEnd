@@ -156,9 +156,9 @@ export const GradeFormulaSettings: React.FC = () => {
             <span className="material-symbols-outlined text-[28px]">tune</span>
           </div>
           <div>
-            <h2 className="text-lg font-bold text-on-surface">Pengaturan Bobot Nilai Akhir (NA)</h2>
+            <h2 className="text-lg font-bold text-on-surface">Pengaturan Bobot Nilai Rapor (SMKN 1 Tanjungpandan)</h2>
             <p className="text-xs text-on-surface-variant mt-0.5">
-              Konfigurasi persentase bobot Ulangan Harian, Tugas, dan UAS secara global atau per mata pelajaran.
+              Atur persentase perhitungan nilai rapor (Ulangan Harian, Tugas, dan Sumatif Akhir Semester/SAS).
             </p>
           </div>
         </div>
@@ -168,24 +168,24 @@ export const GradeFormulaSettings: React.FC = () => {
       <div className="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container-high shadow-card space-y-6">
         <div>
           <label className="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
-            Target Pengaturan Bobot
+            Pilihan Mata Pelajaran
           </label>
           <select
             value={selectedSubjectId}
             onChange={(e) => setSelectedSubjectId(e.target.value)}
             className="w-full sm:w-80 bg-surface-container-low px-4 py-2.5 rounded-xl text-xs font-bold text-on-surface border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary/20"
           >
-            <option value="">🌐 Standar Global (Semua Mata Pelajaran)</option>
+            <option value="">🌐 Standar Seluruh Mata Pelajaran (Umum)</option>
             {subjects.map((s) => (
               <option key={s.id} value={s.id}>
-                📌 Override Khusus: {s.code} - {s.name}
+                📌 Khusus Mapel: {s.code} - {s.name}
               </option>
             ))}
           </select>
           <p className="text-[11px] text-on-surface-variant mt-1.5">
             {selectedSubjectId === ''
-              ? 'Pengaturan ini akan menjadi bobot bawaan untuk seluruh mata pelajaran yang tidak memiliki override khusus.'
-              : 'Pengaturan ini khusus berlaku untuk mata pelajaran ini saja.'}
+              ? 'Pengaturan ini akan digunakan secara otomatis untuk seluruh mata pelajaran di SMKN 1 Tanjungpandan.'
+              : 'Pengaturan ini khusus berlaku untuk mata pelajaran yang dipilih di atas.'}
           </p>
         </div>
 

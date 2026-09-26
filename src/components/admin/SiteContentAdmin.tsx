@@ -80,9 +80,9 @@ export const SiteContentAdmin: React.FC = () => {
             <span className="material-symbols-outlined text-[28px]">edit_note</span>
           </div>
           <div>
-            <h2 className="text-lg font-bold text-on-surface">Kelola Teks & Konten Website</h2>
+            <h2 className="text-lg font-bold text-on-surface">Pesan & Teks Sekolah (SMKN 1 Tanjungpandan)</h2>
             <p className="text-xs text-on-surface-variant mt-0.5">
-              Ubah teks judul, tombol, sambutan, dan label di seluruh halaman secara langsung tanpa mengubah kode.
+              Sesuaikan teks pengumuman, salam pembuka, dan informasi sekolah yang tampil pada seluruh portal SiNilai.
             </p>
           </div>
         </div>

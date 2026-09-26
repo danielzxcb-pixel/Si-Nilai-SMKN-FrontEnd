@@ -17,15 +17,15 @@ export const AuditLogModal: React.FC = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-wider mb-1">
-            <span>Sistem Audit & Rekam Jejak</span>
+            <span>SMKN 1 Tanjungpandan</span>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span className="text-primary font-bold">Integritas Data Penilaian</span>
+            <span className="text-primary font-bold">Keamanan & Riwayat Nilai</span>
           </div>
           <h1 className="text-2xl font-extrabold text-on-surface tracking-tight">
-            Log Audit Perubahan Nilai & Revisi
+            Riwayat Perubahan Nilai Siswa
           </h1>
           <p className="text-xs text-on-surface-variant mt-0.5">
-            Semua riwayat pengubahan nilai harian, penyerahan rapor, dan pembatalan draf tersimpan secara permanen.
+            Catatan transparan setiap kali ada guru atau petugas yang memperbarui nilai siswa agar terdata dengan rapi dan akurat.
           </p>
         </div>
 

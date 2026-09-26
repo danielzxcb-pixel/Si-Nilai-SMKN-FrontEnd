@@ -31,22 +31,22 @@ export const AdminOverviewDashboard: React.FC<AdminOverviewDashboardProps> = ({ 
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex flex-col">
           <div className="flex items-center gap-1.5 text-on-surface-variant text-xs font-semibold uppercase tracking-wider mb-1">
-            <span>Panel Utama Administrator</span>
+            <span>Sistem Manajemen Sekolah</span>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span className="text-primary font-bold">Ringkasan Eksekutif Sekolah</span>
+            <span className="text-primary font-bold">SMKN 1 Tanjungpandan</span>
           </div>
           <h1 className="text-2xl font-extrabold text-on-surface tracking-tight">
-            Dashboard Utama Administrator
+            Ringkasan Umum Sekolah & Capaian Nilai
           </h1>
           <p className="text-xs text-on-surface-variant mt-0.5">
-            Selamat datang di pusat kendali SiNilai SMK. Pantau ringkasan data akademik, progres penilaian guru, dan status sistem secara realtime.
+            Selamat datang di portal SiNilai SMKN 1 Tanjungpandan. Pantau perkembangan pengisian nilai rapor, data guru, serta siswa secara langsung.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <div className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-xl border border-emerald-300">
             <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-            Server & Database Online
+            Sistem Sekolah Aktif
           </div>
         </div>
       </div>
@@ -144,15 +144,15 @@ export const AdminOverviewDashboard: React.FC<AdminOverviewDashboardProps> = ({ 
               </span>
             </div>
             <h3 className="text-lg font-bold text-on-surface mt-1">
-              Status Pengumpulan Nilai Guru
+              Keterisian Nilai Rapor Guru
             </h3>
             <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
-              Ringkasan kelengkapan penginputan nilai rapor dari seluruh kombinasi rombel dan mata pelajaran.
+              Ringkasan kelengkapan nilai yang sudah dinilai dan diserahkan oleh bapak/ibu guru untuk dicetak di rapor.
             </p>
 
             <div className="flex items-baseline gap-2 mt-4">
               <span className="text-4xl font-extrabold text-primary">{percentComplete}%</span>
-              <span className="text-xs text-on-surface-variant font-semibold">Tuntas Disubmit</span>
+              <span className="text-xs text-on-surface-variant font-semibold">Tuntas Dinilai</span>
             </div>
 
             <div className="w-full bg-surface-container-high h-3 rounded-full overflow-hidden mt-3">
@@ -183,24 +183,24 @@ export const AdminOverviewDashboard: React.FC<AdminOverviewDashboardProps> = ({ 
             onClick={() => onNavigate('realtime-tracker')}
             className="w-full mt-5 bg-surface-container-low hover:bg-surface-container-high text-primary font-bold text-xs py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <span>Buka Realtime Tracker Nilai</span>
+            <span>Pantau Pengumpulan Nilai Guru</span>
             <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
           </button>
         </div>
 
         {/* Quick Action Navigation Cards (2 Cols) */}
         <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Card 1: Manajemen Guru & Mapel */}
+          {/* Card 1: Tugas Mengajar Guru */}
           <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-card border border-surface-container-high flex flex-col justify-between hover:border-primary/40 transition-all group">
             <div className="flex flex-col gap-2">
               <div className="w-10 h-10 rounded-xl bg-primary-container text-white flex items-center justify-center shadow-xs">
                 <span className="material-symbols-outlined text-[22px]">school</span>
               </div>
               <h4 className="text-base font-bold text-on-surface group-hover:text-primary transition-colors">
-                Manajemen Guru & Mapel
+                Tugas Mengajar Guru
               </h4>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                Kelola akun tenaga pendidik, atur hak akses mata pelajaran yang diampu, serta tentukan rombel kelas yang boleh diakses.
+                Kelola akun tenaga pendidik, atur mata pelajaran yang diampu, serta tentukan rombel kelas yang diajar.
               </p>
             </div>
             <button
@@ -208,22 +208,22 @@ export const AdminOverviewDashboard: React.FC<AdminOverviewDashboardProps> = ({ 
               onClick={() => onNavigate('guru-management')}
               className="mt-4 inline-flex items-center justify-between text-xs font-bold text-primary group-hover:translate-x-1 transition-transform cursor-pointer"
             >
-              <span>Buka Manajemen Guru</span>
+              <span>Buka Tugas Mengajar Guru</span>
               <span className="material-symbols-outlined text-[18px]">chevron_right</span>
             </button>
           </div>
 
-          {/* Card 2: Kelola Kelas & Mapel */}
+          {/* Card 2: Data Kelas & Mapel */}
           <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-card border border-surface-container-high flex flex-col justify-between hover:border-secondary/40 transition-all group">
             <div className="flex flex-col gap-2">
               <div className="w-10 h-10 rounded-xl bg-secondary text-white flex items-center justify-center shadow-xs">
                 <span className="material-symbols-outlined text-[22px]">tune</span>
               </div>
               <h4 className="text-base font-bold text-on-surface group-hover:text-secondary transition-colors">
-                Kelola Kelas & Mapel
+                Data Kelas & Mapel
               </h4>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                Master data rombel kelas (Tingkat X, XI, XII) dan daftar mata pelajaran. Tambah kelas atau mapel baru langsung dari panel ini.
+                Daftar rombel kelas (Tingkat X, XI, XII) dan mata pelajaran. Tambah rombel atau mapel baru sekolah di sini.
               </p>
             </div>
             <button
@@ -231,22 +231,22 @@ export const AdminOverviewDashboard: React.FC<AdminOverviewDashboardProps> = ({ 
               onClick={() => onNavigate('kelola-kelas-mapel')}
               className="mt-4 inline-flex items-center justify-between text-xs font-bold text-secondary group-hover:translate-x-1 transition-transform cursor-pointer"
             >
-              <span>Buka Kelola Kelas & Mapel</span>
+              <span>Buka Data Kelas & Mapel</span>
               <span className="material-symbols-outlined text-[18px]">chevron_right</span>
             </button>
           </div>
 
-          {/* Card 3: Monitoring & Rekap Nilai */}
+          {/* Card 3: Rekapitulasi Nilai Sekolah */}
           <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-card border border-surface-container-high flex flex-col justify-between hover:border-indigo-400 transition-all group">
             <div className="flex flex-col gap-2">
               <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
                 <span className="material-symbols-outlined text-[22px]">analytics</span>
               </div>
               <h4 className="text-base font-bold text-on-surface group-hover:text-indigo-600 transition-colors">
-                Monitoring & Rekapitulasi
+                Rekapitulasi Nilai Sekolah
               </h4>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                Pantau rekapitulasi nilai rapor per rombel, statistik ketuntasan KKM, serta lakukan verifikasi dan approval berkas.
+                Pantau rekap nilai rapor per rombel kelas, ketuntasan kriteria KKM, serta verifikasi kelengkapan nilai.
               </p>
             </div>
             <button
@@ -254,22 +254,22 @@ export const AdminOverviewDashboard: React.FC<AdminOverviewDashboardProps> = ({ 
               onClick={() => onNavigate('monitoring-rekap')}
               className="mt-4 inline-flex items-center justify-between text-xs font-bold text-indigo-600 group-hover:translate-x-1 transition-transform cursor-pointer"
             >
-              <span>Buka Monitoring Nilai</span>
+              <span>Buka Rekapitulasi Nilai</span>
               <span className="material-symbols-outlined text-[18px]">chevron_right</span>
             </button>
           </div>
 
-          {/* Card 4: Pengaturan Bobot NA */}
+          {/* Card 4: Pengaturan Bobot Rapor */}
           <div className="bg-surface-container-lowest p-5 rounded-2xl shadow-card border border-surface-container-high flex flex-col justify-between hover:border-amber-400 transition-all group">
             <div className="flex flex-col gap-2">
               <div className="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center shadow-xs">
                 <span className="material-symbols-outlined text-[22px]">calculate</span>
               </div>
               <h4 className="text-base font-bold text-on-surface group-hover:text-amber-700 transition-colors">
-                Pengaturan Bobot NA
+                Pengaturan Bobot Rapor
               </h4>
               <p className="text-xs text-on-surface-variant leading-relaxed">
-                Atur formula persentase pembobotan Nilai Akhir (Ulangan Harian %, Tugas %, dan UAS %) secara fleksibel per mata pelajaran.
+                Atur formula persentase pembobotan Nilai Akhir (Ulangan Harian %, Tugas %, dan UAS %) sesuai pedoman kurikulum.
               </p>
             </div>
             <button
@@ -289,14 +289,14 @@ export const AdminOverviewDashboard: React.FC<AdminOverviewDashboardProps> = ({ 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-outline text-[20px]">history</span>
-            <h3 className="text-sm font-bold text-on-surface">Aktivitas Sistem & Audit Terakhir</h3>
+            <h3 className="text-sm font-bold text-on-surface">Catatan Aktivitas Penilaian Terbaru</h3>
           </div>
           <button
             type="button"
             onClick={() => onNavigate('audit-log')}
             className="text-xs font-bold text-primary hover:underline cursor-pointer"
           >
-            Lihat Semua Log
+            Lihat Seluruh Riwayat
           </button>
         </div>
 

@@ -20,21 +20,31 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
     setError(null);
     setIsLoading(true);
 
+    const cleanIdentifier = identifier.trim();
+
     try {
-      const response = await apiClient.login(identifier, password);
+      const response = await apiClient.login(cleanIdentifier, password);
       if (response && response.token && response.user) {
+        // Normalize snake_case to camelCase for full React state compatibility
+        const normalizedUser = {
+          ...response.user,
+          assignedSubjects: response.user.assignedSubjects || response.user.assigned_subjects || [],
+          assignedClasses: response.user.assignedClasses || response.user.assigned_classes || [],
+        };
         apiClient.setToken(response.token);
-        setAuthenticatedUser(response.user, response.token);
+        setAuthenticatedUser(normalizedUser, response.token);
         onLoginSuccess();
       } else {
         setError('Email/NIP atau kata sandi tidak valid. Periksa kembali kredensial Anda.');
       }
     } catch (err: any) {
-      // Security: Generic error message, never leaks account existence or stack traces
-      const msg = err.status === 429
-        ? 'Terlalu banyak percobaan login gagal. Akun/IP terkunci sementara demi keamanan (15 menit).'
-        : 'Email/NIP atau kata sandi tidak valid. Periksa kembali kredensial Anda.';
-      setError(msg);
+      if (err.status === 429) {
+        setError(err.message || 'Terlalu banyak percobaan login gagal. Akun/IP terkunci sementara demi keamanan (15 menit).');
+      } else if (!err.status || err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError') || err.message?.includes('fetch')) {
+        setError('Tidak dapat terhubung ke server. Pastikan koneksi internet Anda aktif atau hubungi administrator sekolah.');
+      } else {
+        setError(err.data?.message || err.message || 'Email/NIP atau kata sandi tidak valid. Periksa kembali kredensial Anda.');
+      }
     } finally {
       setIsLoading(false);
     }

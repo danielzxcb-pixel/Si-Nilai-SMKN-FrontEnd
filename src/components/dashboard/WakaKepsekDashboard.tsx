@@ -160,15 +160,15 @@ export const WakaKepsekDashboard: React.FC = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex flex-col">
           <div className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-wider mb-1">
-            <span>Administrasi Kurikulum & Kepala Sekolah</span>
+            <span>SMKN 1 Tanjungpandan</span>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span className="text-primary font-bold">SMKN 1 Tanjungpandan</span>
+            <span className="text-primary font-bold">Kurikulum Merdeka</span>
           </div>
           <h1 className="text-2xl font-extrabold text-on-surface tracking-tight">
-            Monitoring & Rekap Nilai Rapor Kurikulum Merdeka
+            Rekapitulasi & Pemantauan Nilai Rapor Siswa
           </h1>
           <p className="text-xs text-on-surface-variant mt-0.5">
-            Pantau status penyerahan leger nilai, analisis distribusi KKM, serta verifikasi atau kembalikan draf nilai untuk revisi.
+            Pantau ketercapaian nilai siswa di setiap kelas, verifikasi penyerahan nilai guru, dan unduh berkas rekap nilai resmi.
           </p>
         </div>
 

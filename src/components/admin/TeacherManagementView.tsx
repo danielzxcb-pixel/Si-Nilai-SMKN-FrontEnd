@@ -48,22 +48,22 @@ export const TeacherManagementView: React.FC = () => {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex flex-col">
           <div className="flex items-center gap-1.5 text-on-surface-variant text-xs font-semibold uppercase tracking-wider mb-1">
-            <span>Administrasi Akademik</span>
+            <span>Kepegawaian & Akademik SMKN 1 Tanjungpandan</span>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span className="text-primary font-bold">Penugasan Pengajar</span>
+            <span className="text-primary font-bold">Penugasan Guru</span>
           </div>
           <h1 className="text-2xl font-extrabold text-on-surface tracking-tight">
-            Manajemen Guru & Hak Akses Penugasan
+            Data Guru & Pembagian Tugas Mengajar
           </h1>
           <p className="text-xs text-on-surface-variant mt-0.5">
-            Atur pembagian mata pelajaran yang diampu, alokasi rombel kelas, serta hak akses khusus cetak rapor dengan <strong>live sync instan</strong>.
+            Atur pembagian mata pelajaran yang diampu bapak/ibu guru, kelas yang diajar, serta wewenang cetak rapor siswa.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <div className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-xl border border-emerald-300">
             <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-            Realtime Auto-Sync Aktif
+            Penyimpanan Otomatis Aktif
           </div>
         </div>
       </div>
@@ -193,10 +193,10 @@ export const TeacherManagementView: React.FC = () => {
                 <th className="py-3 px-4 min-w-[240px]">Nama Guru & NIP</th>
                 <th className="py-3 px-4 min-w-[260px]">Mata Pelajaran Diampu</th>
                 <th className="py-3 px-4 min-w-[200px]">Kelas / Rombel yang Diakses</th>
-                <th className="py-3 px-4 min-w-[120px]">Beban Jam</th>
+                <th className="py-3 px-4 min-w-[120px]">Beban Mengajar (JP)</th>
                 <th className="py-3 px-4 min-w-[140px]">Izin Cetak Rapor</th>
-                <th className="py-3 px-4 min-w-[120px]">Status Akun</th>
-                <th className="py-3 px-4 min-w-[160px] text-right">Aksi Realtime</th>
+                <th className="py-3 px-4 min-w-[120px]">Status Mengajar</th>
+                <th className="py-3 px-4 min-w-[160px] text-right">Pengaturan</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-container-high text-xs text-on-surface font-medium">
@@ -323,10 +323,10 @@ export const TeacherManagementView: React.FC = () => {
                         type="button"
                         onClick={() => handleOpenAssignModal(teacher)}
                         className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-container text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
-                        title="Edit mapel, rombel, dan hak akses guru"
+                        title="Atur mapel, kelas, dan wewenang guru"
                       >
                         <span className="material-symbols-outlined text-[16px]">tune</span>
-                        <span>Atur Hak Akses</span>
+                        <span>Atur Tugas & Izin</span>
                       </button>
                     </td>
                   </tr>

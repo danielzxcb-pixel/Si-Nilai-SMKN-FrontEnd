@@ -341,19 +341,19 @@ export const GuruDashboard: React.FC = () => {
       {/* Top Context Bar: Subject & Class Selectors */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-surface-container-lowest p-6 rounded-2xl shadow-card border border-surface-container-high">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-primary-container text-white flex items-center justify-center shadow-md shrink-0">
-            <span className="material-symbols-outlined text-[28px]">terminal</span>
+          <div className="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center shadow-md shrink-0">
+            <span className="material-symbols-outlined text-[28px]">edit_note</span>
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wider">
-              <span>Portal Penilaian Guru</span>
+              <span>SMKN 1 Tanjungpandan</span>
               <span className="text-outline-variant">•</span>
               <span className="text-on-surface-variant font-medium">
-                {currentUser?.name} {currentUser?.nip ? `(NIP. ${currentUser.nip})` : ''}
+                Guru: {currentUser?.name} {currentUser?.nip ? `(NIP. ${currentUser.nip})` : ''}
               </span>
             </div>
             <h1 className="text-2xl font-extrabold text-on-surface tracking-tight mt-0.5">
-              Input Nilai: {activeSubject?.name} ({activeClass?.name})
+              Input Nilai Rapor: {activeSubject?.name} ({activeClass?.name})
             </h1>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-on-surface-variant">
               <span className="inline-flex items-center gap-1 font-semibold text-on-surface">

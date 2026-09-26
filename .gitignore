@@ -1,3 +1,43 @@
+# =============================================
+# SiNilai SMK — .gitignore (SECURITY HARDENED)
+# =============================================
+
+# === Node.js & Build ===
 node_modules/
 dist/
+.vite/
+*.local
+
+# === Environment & Secrets (JANGAN DI-COMMIT!) ===
 .env
+.env.local
+.env.development
+.env.production
+.env.*.local
+# .env.example BOLEH di-commit (tidak ada nilai asli)
+
+# === Database SQLite (Data sensitif siswa & nilai) ===
+backend-ci4/writable/database.sqlite
+backend-ci4/writable/database.sqlite-shm
+backend-ci4/writable/database.sqlite-wal
+*.sqlite
+*.sqlite3
+
+# === PHP & CodeIgniter Logs ===
+backend-ci4/writable/logs/
+backend-ci4/writable/cache/
+backend-ci4/writable/session/
+backend-ci4/writable/uploads/
+*.log
+
+# === PDF Output (berisi data sekolah) ===
+Panduan_*.pdf
+docs/*.pdf
+
+# === OS & IDE Files ===
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
